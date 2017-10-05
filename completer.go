@@ -7,6 +7,9 @@ func NewCompleter() Completer {
 }
 
 func (c Completer) Add(s string) {
+	if _, found := c[s]; found {
+		return
+	}
 	for i := 0; i < len(s); i++ {
 		prefix := s[:i+1]
 		if _, ok := c[prefix]; ok {

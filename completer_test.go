@@ -66,3 +66,15 @@ func TestCompleter(t *testing.T) {
 		}
 	}
 }
+
+func TestDuplicates(t *testing.T) {
+
+	c := NewCompleter()
+	c.Add("foo")
+	c.Add("foo")
+
+	prefix := "fo"
+	if got, ok := c.Lookup(prefix); !ok {
+		t.Errorf("not handling duplicates. %+v.Lookup(%q) == %q, want \"foo\"", c, prefix, got)
+	}
+}
