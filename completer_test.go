@@ -1,6 +1,10 @@
 package completer
 
-import "testing"
+import (
+	"reflect"
+	"sort"
+	"testing"
+)
 
 func TestCompleter(t *testing.T) {
 	c := NewCompleter()
@@ -124,5 +128,29 @@ func TestDuplicateKey(t *testing.T) {
 	err := c.Add("foo")
 	if err == nil {
 		t.Errorf("%+v.Add(\"foo\") == nil, want error", c)
+	}
+}
+
+func TestCompleteFunction(t *testing.T) {
+	c := NewCompleter()
+	words := []string{"foobar", "foobaz"}
+	wantWords := map[string][]string{
+		"f":      []string{"foobar", "foobaz"},
+		"fo":     []string{"foobar", "foobaz"},
+		"foo":    []string{"foobar", "foobaz"},
+		"foob":   []string{"foobar", "foobaz"},
+		"fooba":  []string{"foobar", "foobaz"},
+		"foobar": []string{"foobar"},
+	}
+	for _, w := range words {
+		c.Add(w)
+	}
+	for prefix, want := range wantWords {
+		got := c.Complete(prefix)
+		sort.Strings(got)
+		sort.Strings(want)
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf(".Complete(%q) == %q, want %q", prefix, got, want)
+		}
 	}
 }
