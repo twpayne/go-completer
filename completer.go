@@ -6,6 +6,13 @@ import (
 	"strings"
 )
 
+// An errDuplicate is returned when a string is added more than once.
+type errDuplicate string
+
+func (e errDuplicate) Error() string {
+	return fmt.Sprintf("duplicate key: %q", string(e))
+}
+
 // A Completer is a set of strings that can be addressed by their unique
 // prefixes.
 type Completer struct {
@@ -25,7 +32,7 @@ func NewCompleter() Completer {
 func (c Completer) Add(s string) error {
 	if _, ok := c.aliases[s]; ok {
 		if _, ok := c.originals[s]; ok {
-			return fmt.Errorf("unable to add duplicate key %q", s)
+			return errDuplicate(s)
 		}
 	}
 	for i := 0; i < len(s); i++ {
