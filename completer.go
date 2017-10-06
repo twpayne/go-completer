@@ -15,7 +15,10 @@ type Completer struct {
 
 // NewCompleter returns an empty Completer.
 func NewCompleter() Completer {
-	return Completer{aliases: make(map[string]string), originals: make(map[string]struct{})}
+	return Completer{
+		aliases:   make(map[string]string),
+		originals: make(map[string]struct{}),
+	}
 }
 
 // Add adds s to the set of possible completions.
