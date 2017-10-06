@@ -7,13 +7,12 @@ import (
 )
 
 func TestCompleterAddAndLookup(t *testing.T) {
-	c := NewCompleter()
 	for _, tc := range []struct {
-		add  string
+		add  []string
 		want map[string]string
 	}{
 		{
-			add: "foo",
+			add: []string{"foo"},
 			want: map[string]string{
 				"":    "",
 				"f":   "foo",
@@ -22,7 +21,7 @@ func TestCompleterAddAndLookup(t *testing.T) {
 			},
 		},
 		{
-			add: "bar",
+			add: []string{"foo", "bar"},
 			want: map[string]string{
 				"":    "",
 				"b":   "bar",
@@ -34,7 +33,7 @@ func TestCompleterAddAndLookup(t *testing.T) {
 			},
 		},
 		{
-			add: "baz",
+			add: []string{"foo", "bar", "baz"},
 			want: map[string]string{
 				"":    "",
 				"b":   "",
@@ -47,7 +46,7 @@ func TestCompleterAddAndLookup(t *testing.T) {
 			},
 		},
 		{
-			add: "fux",
+			add: []string{"foo", "bar", "baz", "fux"},
 			want: map[string]string{
 				"":    "",
 				"b":   "",
@@ -61,33 +60,8 @@ func TestCompleterAddAndLookup(t *testing.T) {
 				"fux": "fux",
 			},
 		},
-	} {
-		c.Add(tc.add)
-		for prefix, want := range tc.want {
-			if got, ok := c.Lookup(prefix); got != want || (got == "" && ok) {
-				t.Errorf("%+v.Lookup(%q) == %q, %t, want %q", c, prefix, got, ok, want)
-			}
-		}
-	}
-}
-
-func TestCompleterAddAndLookupSubstrings(t *testing.T) {
-	c := NewCompleter()
-	for _, tc := range []struct {
-		add  string
-		want map[string]string
-	}{
 		{
-			add: "foo",
-			want: map[string]string{
-				"":    "",
-				"f":   "foo",
-				"fo":  "foo",
-				"foo": "foo",
-			},
-		},
-		{
-			add: "foobar",
+			add: []string{"foo", "foobar"},
 			want: map[string]string{
 				"":       "",
 				"f":      "",
@@ -99,7 +73,12 @@ func TestCompleterAddAndLookupSubstrings(t *testing.T) {
 			},
 		},
 	} {
-		c.Add(tc.add)
+		c := NewCompleter()
+		for _, s := range tc.add {
+			if err := c.Add(s); err != nil {
+				t.Errorf("%+v.Add(%q) == %s, want <nil>", c, s)
+			}
+		}
 		for prefix, want := range tc.want {
 			if got, ok := c.Lookup(prefix); got != want || (got == "" && ok) {
 				t.Errorf("%+v.Lookup(%q) == %q, %t, want %q", c, prefix, got, ok, want)
