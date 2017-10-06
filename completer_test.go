@@ -130,24 +130,29 @@ func TestCompleterAddDuplicate(t *testing.T) {
 
 func TestCompleterComplete(t *testing.T) {
 	c := NewCompleter()
-	words := []string{"foo", "foobar", "foobaz"}
-	wantWords := map[string][]string{
-		"f":      []string{"foo", "foobar", "foobaz"},
-		"fo":     []string{"foo", "foobar", "foobaz"},
-		"foo":    []string{"foo", "foobar", "foobaz"},
-		"foob":   []string{"foobar", "foobaz"},
-		"fooba":  []string{"foobar", "foobaz"},
-		"foobar": []string{"foobar"},
-	}
-	for _, w := range words {
+	for _, w := range []string{
+		"foo",
+		"foobar",
+		"foobaz",
+	} {
 		c.Add(w)
 	}
-	for prefix, want := range wantWords {
-		got := c.Complete(prefix)
+	for _, tc := range []struct {
+		prefix string
+		want   []string
+	}{
+		{"f", []string{"foo", "foobar", "foobaz"}},
+		{"fo", []string{"foo", "foobar", "foobaz"}},
+		{"foo", []string{"foo", "foobar", "foobaz"}},
+		{"foob", []string{"foobar", "foobaz"}},
+		{"fooba", []string{"foobar", "foobaz"}},
+		{"foobar", []string{"foobar"}},
+	} {
+		got := c.Complete(tc.prefix)
 		sort.Strings(got)
-		sort.Strings(want)
-		if !reflect.DeepEqual(got, want) {
-			t.Errorf("%+v.Complete(%q) == %q, want %q", c, prefix, got, want)
+		sort.Strings(tc.want)
+		if !reflect.DeepEqual(got, tc.want) {
+			t.Errorf("%+v.Complete(%q) == %q, want %q", c, tc.prefix, got, tc.want)
 		}
 	}
 }
