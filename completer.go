@@ -1,6 +1,9 @@
 package completer
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type Completer struct {
 	aliases   map[string]string
@@ -35,4 +38,14 @@ func (c Completer) Add(s string) error {
 func (c Completer) Lookup(s string) (string, bool) {
 	got, ok := c.aliases[s]
 	return got, ok
+}
+
+func (c Completer) Complete(s string) []string {
+	out := []string{}
+	for v := range c.originals {
+		if strings.HasPrefix(v, s) {
+			out = append(out, v)
+		}
+	}
+	return out
 }
