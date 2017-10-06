@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestCompleter(t *testing.T) {
+func TestCompleterAddAndLookup(t *testing.T) {
 	c := NewCompleter()
 	for _, tc := range []struct {
 		add  string
@@ -71,7 +71,7 @@ func TestCompleter(t *testing.T) {
 	}
 }
 
-func TestSubstrings(t *testing.T) {
+func TestCompleterAddAndLookupSubstrings(t *testing.T) {
 	c := NewCompleter()
 	for _, tc := range []struct {
 		add  string
@@ -108,30 +108,27 @@ func TestSubstrings(t *testing.T) {
 	}
 }
 
-func TestSubstringLookup(t *testing.T) {
+func TestCompleterSubstringLookup(t *testing.T) {
 	c := NewCompleter()
-	c.Add("foor")
-	err := c.Add("fo")
-	if err != nil {
-		t.Errorf("%+v.Add(\"fo\") == %v, want 'nil'", c, err)
+	c.Add("foo")
+	if err := c.Add("fo"); err != nil {
+		t.Errorf("%+v.Add(\"fo\") == %v, want <nil>", c, err)
 	}
-
 	prefix := "f"
 	if got, ok := c.Lookup(prefix); ok {
 		t.Errorf("%+v.Lookup(%q) == %q, %t, want \"\", false", c, prefix, got, ok)
 	}
 }
 
-func TestDuplicateKey(t *testing.T) {
+func TestCompleterAddDuplicate(t *testing.T) {
 	c := NewCompleter()
 	c.Add("foo")
-	err := c.Add("foo")
-	if err == nil {
-		t.Errorf("%+v.Add(\"foo\") == nil, want error", c)
+	if err := c.Add("foo"); err == nil {
+		t.Errorf("%+v.Add(\"foo\") == <nil>, want !<nil>", c)
 	}
 }
 
-func TestCompleteFunction(t *testing.T) {
+func TestCompleterComplete(t *testing.T) {
 	c := NewCompleter()
 	words := []string{"foobar", "foobaz"}
 	wantWords := map[string][]string{
@@ -150,7 +147,7 @@ func TestCompleteFunction(t *testing.T) {
 		sort.Strings(got)
 		sort.Strings(want)
 		if !reflect.DeepEqual(got, want) {
-			t.Errorf(".Complete(%q) == %q, want %q", prefix, got, want)
+			t.Errorf("%+v.Complete(%q) == %q, want %q", c, prefix, got, want)
 		}
 	}
 }
