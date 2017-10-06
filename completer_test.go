@@ -8,12 +8,20 @@ import (
 
 func TestCompleterAddAndLookup(t *testing.T) {
 	for _, tc := range []struct {
-		add  []string
-		want map[string]string
+		add          []string
+		wantLookup   map[string]string
+		wantComplete map[string][]string
 	}{
 		{
-			add: []string{"foo"},
-			want: map[string]string{
+			add: []string{
+				"foo",
+			},
+			wantComplete: map[string][]string{
+				"f":   []string{"foo"},
+				"fo":  []string{"foo"},
+				"foo": []string{"foo"},
+			},
+			wantLookup: map[string]string{
 				"":    "",
 				"f":   "foo",
 				"fo":  "foo",
@@ -21,8 +29,19 @@ func TestCompleterAddAndLookup(t *testing.T) {
 			},
 		},
 		{
-			add: []string{"foo", "bar"},
-			want: map[string]string{
+			add: []string{
+				"bar",
+				"foo",
+			},
+			wantComplete: map[string][]string{
+				"b":   []string{"bar"},
+				"ba":  []string{"bar"},
+				"bar": []string{"bar"},
+				"f":   []string{"foo"},
+				"fo":  []string{"foo"},
+				"foo": []string{"foo"},
+			},
+			wantLookup: map[string]string{
 				"":    "",
 				"b":   "bar",
 				"ba":  "bar",
@@ -33,8 +52,21 @@ func TestCompleterAddAndLookup(t *testing.T) {
 			},
 		},
 		{
-			add: []string{"foo", "bar", "baz"},
-			want: map[string]string{
+			add: []string{
+				"bar",
+				"baz",
+				"foo",
+			},
+			wantComplete: map[string][]string{
+				"b":   []string{"bar", "baz"},
+				"ba":  []string{"bar", "baz"},
+				"bar": []string{"bar"},
+				"baz": []string{"baz"},
+				"f":   []string{"foo"},
+				"fo":  []string{"foo"},
+				"foo": []string{"foo"},
+			},
+			wantLookup: map[string]string{
 				"":    "",
 				"b":   "",
 				"ba":  "",
@@ -46,8 +78,13 @@ func TestCompleterAddAndLookup(t *testing.T) {
 			},
 		},
 		{
-			add: []string{"foo", "bar", "baz", "fux"},
-			want: map[string]string{
+			add: []string{
+				"bar",
+				"baz",
+				"foo",
+				"fux",
+			},
+			wantLookup: map[string]string{
 				"":    "",
 				"b":   "",
 				"ba":  "",
@@ -61,8 +98,11 @@ func TestCompleterAddAndLookup(t *testing.T) {
 			},
 		},
 		{
-			add: []string{"foo", "foobar"},
-			want: map[string]string{
+			add: []string{
+				"foo",
+				"foobar",
+			},
+			wantLookup: map[string]string{
 				"":       "",
 				"f":      "",
 				"fo":     "",
@@ -72,6 +112,21 @@ func TestCompleterAddAndLookup(t *testing.T) {
 				"foobar": "foobar",
 			},
 		},
+		{
+			add: []string{
+				"foo",
+				"foobar",
+				"foobaz",
+			},
+			wantComplete: map[string][]string{
+				"f":      []string{"foo", "foobar", "foobaz"},
+				"fo":     []string{"foo", "foobar", "foobaz"},
+				"foo":    []string{"foo", "foobar", "foobaz"},
+				"foob":   []string{"foobar", "foobaz"},
+				"fooba":  []string{"foobar", "foobaz"},
+				"foobar": []string{"foobar"},
+			},
+		},
 	} {
 		c := NewCompleter()
 		for _, s := range tc.add {
@@ -79,9 +134,16 @@ func TestCompleterAddAndLookup(t *testing.T) {
 				t.Errorf("%+v.Add(%q) == %s, want <nil>", c, s)
 			}
 		}
-		for prefix, want := range tc.want {
-			if got, ok := c.Lookup(prefix); got != want || (got == "" && ok) {
-				t.Errorf("%+v.Lookup(%q) == %q, %t, want %q", c, prefix, got, ok, want)
+		for prefix, wantLookup := range tc.wantLookup {
+			if got, ok := c.Lookup(prefix); got != wantLookup || (got == "" && ok) {
+				t.Errorf("%+v.Lookup(%q) == %q, %t, want %q", c, prefix, got, ok, wantLookup)
+			}
+		}
+		for prefix, wantComplete := range tc.wantComplete {
+			gotComplete := c.Complete(prefix)
+			sort.Strings(gotComplete)
+			if !reflect.DeepEqual(gotComplete, wantComplete) {
+				t.Errorf("%+v.Complete(%q) == %v, want %v", c, prefix, gotComplete, wantComplete)
 			}
 		}
 	}
@@ -104,34 +166,5 @@ func TestCompleterAddDuplicate(t *testing.T) {
 	c.Add("foo")
 	if err := c.Add("foo"); err == nil {
 		t.Errorf("%+v.Add(\"foo\") == <nil>, want !<nil>", c)
-	}
-}
-
-func TestCompleterComplete(t *testing.T) {
-	c := NewCompleter()
-	for _, w := range []string{
-		"foo",
-		"foobar",
-		"foobaz",
-	} {
-		c.Add(w)
-	}
-	for _, tc := range []struct {
-		prefix string
-		want   []string
-	}{
-		{"f", []string{"foo", "foobar", "foobaz"}},
-		{"fo", []string{"foo", "foobar", "foobaz"}},
-		{"foo", []string{"foo", "foobar", "foobaz"}},
-		{"foob", []string{"foobar", "foobaz"}},
-		{"fooba", []string{"foobar", "foobaz"}},
-		{"foobar", []string{"foobar"}},
-	} {
-		got := c.Complete(tc.prefix)
-		sort.Strings(got)
-		sort.Strings(tc.want)
-		if !reflect.DeepEqual(got, tc.want) {
-			t.Errorf("%+v.Complete(%q) == %q, want %q", c, tc.prefix, got, tc.want)
-		}
 	}
 }
