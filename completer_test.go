@@ -130,11 +130,11 @@ func TestCompleterAddDuplicate(t *testing.T) {
 
 func TestCompleterComplete(t *testing.T) {
 	c := NewCompleter()
-	words := []string{"foobar", "foobaz"}
+	words := []string{"foo", "foobar", "foobaz"}
 	wantWords := map[string][]string{
-		"f":      []string{"foobar", "foobaz"},
-		"fo":     []string{"foobar", "foobaz"},
-		"foo":    []string{"foobar", "foobaz"},
+		"f":      []string{"foo", "foobar", "foobaz"},
+		"fo":     []string{"foo", "foobar", "foobaz"},
+		"foo":    []string{"foo", "foobar", "foobaz"},
 		"foob":   []string{"foobar", "foobaz"},
 		"fooba":  []string{"foobar", "foobaz"},
 		"foobar": []string{"foobar"},
