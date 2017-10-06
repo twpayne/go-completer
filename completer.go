@@ -29,7 +29,7 @@ func NewCompleter() Completer {
 }
 
 // Add adds s to the set of possible completions.
-func (c Completer) Add(s string) error {
+func (c *Completer) Add(s string) error {
 	if _, ok := c.aliases[s]; ok {
 		if _, ok := c.originals[s]; ok {
 			return errDuplicate(s)
@@ -52,13 +52,13 @@ func (c Completer) Add(s string) error {
 
 // Lookup returns the unique completion of s, or the empty string and false if
 // there is no unique completion.
-func (c Completer) Lookup(s string) (string, bool) {
+func (c *Completer) Lookup(s string) (string, bool) {
 	got, ok := c.aliases[s]
 	return got, ok
 }
 
 // Complete returns all possible completions of s.
-func (c Completer) Complete(s string) []string {
+func (c *Completer) Complete(s string) []string {
 	// This is O(N*M) where N is the number of originals and M is their length.
 	// FIXME Find a more efficient implementation.
 	out := []string{}
