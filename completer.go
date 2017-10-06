@@ -50,13 +50,6 @@ func (c *Completer) Add(s string) error {
 	return nil
 }
 
-// Lookup returns the unique completion of prefix, or the empty string and
-// false if there is no unique completion.
-func (c *Completer) Lookup(prefix string) (string, bool) {
-	got, ok := c.aliases[prefix]
-	return got, ok
-}
-
 // Complete returns all possible completions of prefix.
 func (c *Completer) Complete(prefix string) []string {
 	// This is O(N*M) where N is the number of originals and M is their length.
@@ -68,4 +61,11 @@ func (c *Completer) Complete(prefix string) []string {
 		}
 	}
 	return out
+}
+
+// Lookup returns the unique completion of prefix, or the empty string and
+// false if there is no unique completion.
+func (c *Completer) Lookup(prefix string) (string, bool) {
+	got, ok := c.aliases[prefix]
+	return got, ok
 }
