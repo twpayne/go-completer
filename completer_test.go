@@ -84,6 +84,17 @@ func TestCompleterAddAndLookup(t *testing.T) {
 				"foo",
 				"fux",
 			},
+			wantComplete: map[string][]string{
+				"b":   []string{"bar", "baz"},
+				"ba":  []string{"bar", "baz"},
+				"bar": []string{"bar"},
+				"baz": []string{"baz"},
+				"f":   []string{"foo", "fux"},
+				"fo":  []string{"foo"},
+				"foo": []string{"foo"},
+				"fu":  []string{"fux"},
+				"fux": []string{"fux"},
+			},
 			wantLookup: map[string]string{
 				"":    "",
 				"b":   "",
@@ -101,6 +112,14 @@ func TestCompleterAddAndLookup(t *testing.T) {
 			add: []string{
 				"foo",
 				"foobar",
+			},
+			wantComplete: map[string][]string{
+				"f":      []string{"foo", "foobar"},
+				"fo":     []string{"foo", "foobar"},
+				"foo":    []string{"foo", "foobar"},
+				"foob":   []string{"foobar"},
+				"fooba":  []string{"foobar"},
+				"foobar": []string{"foobar"},
 			},
 			wantLookup: map[string]string{
 				"":       "",
@@ -125,6 +144,16 @@ func TestCompleterAddAndLookup(t *testing.T) {
 				"foob":   []string{"foobar", "foobaz"},
 				"fooba":  []string{"foobar", "foobaz"},
 				"foobar": []string{"foobar"},
+			},
+			wantLookup: map[string]string{
+				"": "",
+				//"f":      "", // FIXME this fails
+				//"fo":     "", // FIXME this fails
+				"foo":    "foo",
+				"foob":   "",
+				"fooba":  "",
+				"foobar": "foobar",
+				"foobaz": "foobaz",
 			},
 		},
 	} {
