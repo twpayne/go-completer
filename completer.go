@@ -1,3 +1,4 @@
+// Package completer helps implement autocompletion.
 package completer
 
 import (
@@ -5,15 +6,19 @@ import (
 	"strings"
 )
 
+// A Completer is a set of strings that can be addressed by their unique
+// prefixes.
 type Completer struct {
 	aliases   map[string]string
 	originals map[string]struct{}
 }
 
+// NewCompleter returns an empty Completer.
 func NewCompleter() Completer {
 	return Completer{aliases: make(map[string]string), originals: make(map[string]struct{})}
 }
 
+// Add adds s to the set of possible completions.
 func (c Completer) Add(s string) error {
 	if _, ok := c.aliases[s]; ok {
 		if _, ok := c.originals[s]; ok {
@@ -35,11 +40,14 @@ func (c Completer) Add(s string) error {
 	return nil
 }
 
+// Lookup returns the unique completion of s, or the empty string and false if
+// there is no unique completion.
 func (c Completer) Lookup(s string) (string, bool) {
 	got, ok := c.aliases[s]
 	return got, ok
 }
 
+// Complete returns all possible completions of s.
 func (c Completer) Complete(s string) []string {
 	out := []string{}
 	for v := range c.originals {
