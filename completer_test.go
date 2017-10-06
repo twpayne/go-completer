@@ -146,9 +146,9 @@ func TestCompleterAddAndLookup(t *testing.T) {
 				"foobar": []string{"foobar"},
 			},
 			wantLookup: map[string]string{
-				"": "",
-				//"f":      "", // FIXME this fails
-				//"fo":     "", // FIXME this fails
+				"":       "",
+				"f":      "",
+				"fo":     "",
 				"foo":    "foo",
 				"foob":   "",
 				"fooba":  "",

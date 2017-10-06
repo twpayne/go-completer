@@ -17,6 +17,7 @@ func (e errDuplicate) Error() string {
 // prefixes.
 type Completer struct {
 	aliases   map[string]string
+	ambiguous map[string]struct{}
 	originals map[string]struct{}
 }
 
@@ -24,6 +25,7 @@ type Completer struct {
 func NewCompleter() Completer {
 	return Completer{
 		aliases:   make(map[string]string),
+		ambiguous: make(map[string]struct{}),
 		originals: make(map[string]struct{}),
 	}
 }
@@ -42,6 +44,7 @@ func (c *Completer) Add(s string) error {
 		}
 		if _, ok := c.aliases[prefix]; ok {
 			delete(c.aliases, prefix)
+			c.ambiguous[prefix] = struct{}{}
 		} else {
 			c.aliases[prefix] = s
 		}
@@ -66,6 +69,9 @@ func (c *Completer) Complete(prefix string) []string {
 // Lookup returns the unique completion of prefix, or the empty string and
 // false if there is no unique completion.
 func (c *Completer) Lookup(prefix string) (string, bool) {
+	if _, ok := c.ambiguous[prefix]; ok {
+		return "", false
+	}
 	got, ok := c.aliases[prefix]
 	return got, ok
 }
