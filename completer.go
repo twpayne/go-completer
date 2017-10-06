@@ -52,6 +52,8 @@ func (c Completer) Lookup(s string) (string, bool) {
 
 // Complete returns all possible completions of s.
 func (c Completer) Complete(s string) []string {
+	// This is O(N*M) where N is the number of originals and M is their length.
+	// FIXME Find a more efficient implementation.
 	out := []string{}
 	for v := range c.originals {
 		if strings.HasPrefix(v, s) {
