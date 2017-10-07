@@ -160,7 +160,7 @@ func TestCompleterAddAndLookup(t *testing.T) {
 		c := NewCompleter()
 		for _, s := range tc.add {
 			if err := c.Add(s); err != nil {
-				t.Errorf("%+v.Add(%q) == %s, want <nil>", c, s)
+				t.Errorf("%+v.Add(%q) == %s, want <nil>", c, s, err)
 			}
 		}
 		for prefix, wantLookup := range tc.wantLookup {
