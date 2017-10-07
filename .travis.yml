@@ -4,6 +4,6 @@ script:
   - go test -coverprofile=coverage.out -race -v ./...
   - go tool cover -func=coverage.out
   - go vet ./...
-  - test -z "$(go fmt ./...)"
+  - test -z "$(gofmt -d -s *.go)"
 
 sudo: false
