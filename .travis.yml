@@ -1,0 +1,9 @@
+language: go
+
+script:
+  - go test -coverprofile=coverage.out -race -v ./...
+  - go tool cover -func=coverage.out
+  - go vet ./...
+  - test -z "$(go fmt ./...)"
+
+sudo: false
