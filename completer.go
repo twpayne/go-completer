@@ -32,10 +32,8 @@ func NewCompleter() Completer {
 
 // Add adds s to the set of possible completions.
 func (c *Completer) Add(s string) error {
-	if _, ok := c.aliases[s]; ok {
-		if _, ok := c.originals[s]; ok {
-			return errDuplicate(s)
-		}
+	if _, ok := c.originals[s]; ok {
+		return errDuplicate(s)
 	}
 	for i := 0; i < len(s); i++ {
 		prefix := s[:i+1]
